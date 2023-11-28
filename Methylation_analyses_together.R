@@ -1220,7 +1220,7 @@ layout(matrix(1:2,nrow = 1),widths = c(2,1))
 loe=loess.sd(xxx,yyy)
 par(mar=c(4.1,5.1,2.1,0))
 ### Plot!
-plot(xxx/10,yyy,pch=20,xlab="Methylation",ylab="Epigenetic Age",frame.plot = F,ylim=c(min(yyy)-0.1,max(yyy)+0.1),cex.axis=1.2,cex.lab=1.5)
+plot(xxx/10,yyy,pch=20,xlab="Methylation",ylab="Chronological Age",frame.plot = F,ylim=c(min(yyy)-0.1,max(yyy)+0.1),cex.axis=1.1,cex.lab=1.3, main="Site X",cex.main=1.5)
 lines(loe$x/10,loe$y+2*loe$sd,lwd=2)
 lines(loe$x/10,loe$y-2*loe$sd,lwd=2)
 lines(loe$x/10,loe$y,lwd=2,lty="dashed",col="red")
@@ -1232,12 +1232,11 @@ legend("top",c("LOESS mean","LOESS sd"),col=c("red","black"),lty = c("dashed","s
 segments(x0 = tes/10,x1=tes/10,y0=tesY-tesSD,y1=tesY+tesSD,col=rainbow(3),lwd=1.2)
 dists=mapply(function(x,y)density(rnorm(10000,x,y)),tesY,tesSD/2,SIMPLIFY = F)
 par(mar=c(4.1,0,2.1,2))
-plot(0,0,col="transparent",ylim=c(min(yyy)-0.1,max(yyy)+0.1),xlim=c(0,.7),axes=F,xlab="Age probability",ylab="",cex.axis=1.2,cex.lab=1.5)
-axis(4,cex.axis=1.2)
-axis(1,cex.axis=1.2)
+plot(0,0,col="transparent",ylim=c(min(yyy)-0.1,max(yyy)+0.1),xlim=c(0,.7),axes=F,xlab="Age likelihood",ylab="",cex.axis=1.1,cex.lab=1.3)
+axis(4,cex.axis=1.1)
+axis(1,cex.axis=1.1)
 mapply(function(x,y)polygon(x =y$y,y=y$x,col=adjustcolor(x,.5),border = x),rainbow(3),dists,SIMPLIFY = F)
 dev.off()
-
                                       
 # ## Same as before, but lifespan
 # pdf("test_2.pdf",width=15,height=20)
