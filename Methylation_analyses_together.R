@@ -1203,7 +1203,18 @@ WebGestaltR(enrichMethod="ORA", organism="hsapiens",enrichDatabase="geneontology
   interestGene = g2,referenceGene=unique(scan("GENE_SET_CAPTURE",what="c")),interestGeneType="genesymbol",referenceGeneType="genesymbol")
 WebGestaltR(enrichMethod="ORA", organism="hsapiens",enrichDatabase="geneontology_Biological_Process_noRedundant",
   interestGene = g3,interestGeneType="genesymbol",referenceSet = "genome_protein-coding")
-
+                                      
+### Mantel tests:
+#RRBS:
+mantel.test(as.matrix(dist(t(scale(d)),method="manhattan")),as.matrix(dist(t(scale(a)))),nperm = 100000)
+#Capture
+psn=pelsnp[apply(pelsnp,1,function(x){x=x[!is.na(x)];p=sum(x==0);q=sum(x);
+n=2*length(x);hw=log((sum(x==1)/n)/(2*p*q/n^2));abs(hw)<1 & min(p,q)>1}),]
+psn=as.dist(scale(apply(psn,2,function(x)apply(psn,2,function(y){sum(abs(x-y),na.rm = T)/sum(!(is.na(x) | is.na(y)))}))))
+mantel.test(as.matrix(psn),as.matrix(dist(t(scale(wo[,-1:-2])))),nperm = 100000)
+# Mammalian
+mantel.test(dist.from.cov(nearPD(ju3**(1+R))[[1]]),as.matrix(dist(scale(t(x[,-1])))),graph=T)
+                                      
 ####Mboning et al example Figure
 pdf("example_scage.pdf",9,6)
 ## number of samples
