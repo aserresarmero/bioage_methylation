@@ -872,7 +872,7 @@ points(b[,8][gsub("[_,0-9]","",b[,1])%in%l$DogTree],b[,4][gsub("[_,0-9]","",b[,1
 points(b[,8][!gsub("[_,0-9]","",b[,1])%in%l$DogTree],b[,4][!gsub("[_,0-9]","",b[,1])%in%l$DogTree],pch=25,bg="grey")
 legend("topright",c("Mammalian only","Mammalian & RRBS","RRBS only"),pt.bg = c("White","black","gray"),pch=c(21,22,25),cex=cccex[2],bty='n',bg="transparent")
 mod=summary(lm(c(l$Weight.kg.avg,b[,8])~c(l$LifespanMedianHorvath,b[,4])))
-text(x=20,y=8,paste0("rho = ",round(mod$"adj.r.squared",2),"\np-val = 4.29e-77"),cex=cccex[2])
+text(x=20,y=8,paste0("rho = ",round(cor(c(l$Weight.kg.avg,b[,8]),c(l$LifespanMedianHorvath,b[,4])),2),"\np-val = 4.29e-77"),cex=cccex[2])
 
 ## Tree of breeds 
 par(bg="transparent")
