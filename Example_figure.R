@@ -18,20 +18,21 @@ change_cols = function(replace_black, replace_white, theimg) {
 }
 
 ## Construct barplots signifying lifespan 
-bplot=function(b,p,q){
+bplot=function(b,p,q,ttt){
   #offset from top
   whe=.2
   #Normalize lifespans
   b3=table(b)/max(table(b))*.4
   b=sort(unique(b))
   b2=b/max(b)
-  par(mar=c(5.1,4.1,5.1,2.1))
-  plot(0:(length(b)+1),0:(length(b)+1),ty="n",xlim=c(-0.25,1.25),axes=F,xlab="Chronological age (years)",ylab="",cex.axis=cccex[1],cex.lab=cccex[2],cex.names=cccex[2])
+  par(mar=c(5.1,5.1,5.1,2.1))
+  plot(0:(length(b)+1),0:(length(b)+1),ty="n",xlim=c(-0.25,1.25),axes=F,xlab="Chronological age (years)",ylab="",cex.axis=cccex[1],cex.lab=cccex[3]-0.9,cex.names=cccex[2],)
+  mtext(text = ttt, side = 2,line = 0.6,at = 3,cex=cccex[3]-1.3)
   sapply(1:length(b2),function(x){
     im=change_cols(palette()[x+1],"transparent",p[[x]])
     im2=change_cols(palette()[x+1],"transparent",q[[x]])
-    rasterImage(im,-0.35,x-0.6,0,x+0.4)
-    rasterImage(im2, b2[x],x-0.6,b2[x]+.25,x+0.4)
+    rasterImage(im,-0.4,x-0.6,0,x+0.4)
+    rasterImage(im2, b2[x],x-0.6,b2[x]+.35,x+0.4)
     rect(0,x-b3[x],b2[x],x+b3[x],col=adjustcolor(x+1,.6),border=x+1,lwd=3)
     rect(0,x-b3[x],whe,x+b3[x],col=adjustcolor(x+1,.7),border = "transparent")
     text(whe/2,x,paste0(round(.2/b2[x]*100,0),"%"),cex=cccex[1])
@@ -76,9 +77,9 @@ spiel=function(x1,x2,x3,x4,x4c,x5,y,e,ra=1){
   if(ra==1){r=2}else{r=1}
   names(x3)=paste0("t",1:nn)
   names(x4)=paste0("t",1:nn)
-  d=as.phylo(hclust(dist(x3)*1.3))
+  d=as.phylo(hclust(as.dist(as.matrix(dist(x3)*1.3)^0.2)*4))
   ## Determine inner tree edge colors
-  ns=as.numeric(as.factor(round(c(x2,fastAnc(d,x3)),0)))+1
+  ns=(as.numeric(as.factor(round(c(x3,fastAnc(d,x3)),0)))+1)
   d$tip.label=rep(".", length(d$tip.label))
   ## This formula is contaimanted by a tree from interaction variable x3
   mod=lm(y~Age+Lsp+Int+Tree+Sex,
@@ -94,12 +95,12 @@ spiel=function(x1,x2,x3,x4,x4c,x5,y,e,ra=1){
   legend(1,max(y**2)*1,c("Female","Male"),pch = c(21,22),bty = "n",cex=cccex[2])
   cip(x=x1,y=y,z=factor(x2),ra=ra)
   par(new=T);plot.phylo(d,type="fan",edge.color=ns[match(d$edge[,2],1:length(ns),nomatch = 0)],
-    tip.color="transparent",x.lim = c(-29,1)+2,y.lim = c(-6,9)-0.5)
-  ring((x2/max(x2)*30+rnorm(nn,0,4))/100*1.5,offset = 1/100,d,col=palette()[as.numeric(as.factor(x2))+1])
+    tip.color="transparent",x.lim = c(-29,1)+2,y.lim = c(-6,9)-0.5, edge.width = 0.5)
+  ring((x2/max(x2)*30+rnorm(nn,0,4))/100*1.5,offset = 10/100,d,col=palette()[as.numeric(cut(x2,l))+1])
   par(new=T);plot.phylo(d,type="fan",edge.color=ns[match(d$edge[,2],1:length(ns),nomatch = 0)],
-    tip.color="transparent",x.lim = c(-29,1)+2,y.lim = c(-1,14)+1.3)
-  ring((as.numeric(x4)/max(x4)*30+rnorm(nn,0,7))/80*1.5,offset = 1/100,
-    phy = d,col=palette()[x4c[as.integer(factor(x2))]+1])
+    tip.color="transparent",x.lim = c(-29,1)+2,y.lim = c(-1,14)+1.3,edge.width = 0.5)
+  ring((as.numeric(x4)/max(x4)*30+rnorm(nn,0,7))/80*1.5,offset = 10/100,
+    phy = d,col=palette()[x4c[as.integer(cut(x4,l))]+1])
 }
 
 
@@ -108,16 +109,16 @@ library(ape)
 library(phytools)
 library(png)
 
-pic<-readPNG("DOG_PICTURE1")
-chi=readPNG("DOG_PICTURE2")
-whwt<-readPNG("DOG_PICTURE3")
-bcol=readPNG("DOG_PICTURE4")
-gshp=readPNG("DOG_PICTURE5")
-grd<-readPNG("DOG_PICTURE6")
+pic<-readPNG("~/Documents/doggo/Slide1.png")
+chi=readPNG("~/Documents/doggo/chihuahua.png")
+whwt<-readPNG("~/Documents/doggo/whwt.png")
+bcol=readPNG("~/Documents/doggo/border_collie.png")
+gshp=readPNG("~/Documents/doggo/german_shepherd.png")
+grd<-readPNG("~/Documents/doggo/greatdane.png")
 
-baby<-readPNG("BABY_PICTURE")
-bones<-readPNG("SKULL_PICTURE")
-bones2<-readPNG("DOG_SKULL_PICTURE")
+baby<-readPNG("~/Documents/baby.png")
+bones<-readPNG("~/Documents/bones.png")
+bones2<-readPNG("~/Documents/doggo/bones2.png")
 
 p=list(grd,gshp,bcol,whwt,chi)
 bab=rep(list(baby),5)
@@ -125,6 +126,7 @@ bon=rep(list(bones),5)
 bon2=rep(list(bones2),5)
 
 pdf("~/test_examp.pdf",width=15, height=9)
+#tiff("~/Figures_methylation_paper/Figure1.tiff",width=15*72, height=9*72)
 layout(t(sapply(c(0,3),function(x)x+c(rep(1,2),rep(2:3,each=3)))))
 
 ## Do spiel for human and dog simulated lifespans: the coefficients are arbitrary but 
@@ -134,36 +136,36 @@ layout(t(sapply(c(0,3),function(x)x+c(rep(1,2),rep(2:3,each=3)))))
 ## Effectively this is not a generailzed model, but it plots much nicer.
 ## I'm attaching a similar script below using generalized errors. The p-values are
 ## similar but the regression lines are a lot messier.
-sapply(1:2,function(x){
-  if(x==1){
-    ##Sample human
-    x2=sample(seq(65,100,l=l),nn,replace = T,
-    prob=1.3^(1:length(seq(65,100,l=l))*(rev(1:length(seq(65,100,l=l))))))
-  }else{
-    ## sample dog
-    x2=sample(seq(8,17,l=l),nn,replace = T)
+for (x in 1:2){
+    if(x==1){
+      ##Sample human
+      x2=sample(seq(65,100,l=l),nn,replace = T,
+      prob=1.3^(1:length(seq(65,100,l=l))*(rev(1:length(seq(65,100,l=l))))))
+    }else{
+      ## sample dog
+      x2=sample(seq(8,17,l=l),nn,replace = T)
+    }
+    ## make a variable x3 that follows x2 
+    x3=5+abs((1:length(unique(x2)))[as.integer(factor(x2))]+rnorm(nn,0,.1))
+    ## make a variable x4 that permutes x2 but keeps assignations 
+    x4c=sample(1:length(unique(x2)))
+    x4=5+x4c[as.integer(factor(x2))]+rnorm(nn,0,.4)
+    ## create ages 
+    x1=sapply(x2,function(x)runif(1,0,x))
+    ## add sex for good measure
+    x5=sample(1:2,nn,replace=T)
+    ## make an error (if I had scaled the variables, then it would't be so nasty)
+    e=abs(rnorm(nn,4,3))
+    ## Because the variables are not scaled I need to give everything arbitrary weights
+    y=sqrt(4*x1+x1/x2*50+x5*2+3*e)
+    par(mar=c(8,2,8,2))
+    if(x==1){
+      bplot(x2,bab,bon,ttt="HUMAN")
+    }else{bplot(x2,p,bon2,ttt="DOG")}
+    par(mar=c(4.5,5,4,1))
+    spiel(x1,x2,x3,x4,x4c,x5,y,e,1/2)
+    spiel(x1,x2,x3,x4,x4c,x5,y,e,1)
   }
-  ## make a variable x3 that follows x2 
-  x3=5+abs((1:length(unique(x2)))[as.integer(factor(x2))]+rnorm(nn,0,.1))
-  ## make a variable x4 that permutes x2 but keeps assignations 
-  x4c=sample(1:length(unique(x2)))
-  x4=5+x4c[as.integer(factor(x2))]+rnorm(nn,0,.5)
-  ## create ages 
-  x1=sapply(x2,function(x)runif(1,0,x))
-  ## add sex for good measure
-  x5=sample(1:2,nn,replace=T)
-  ## make an error (if I had scaled the variables, then it would't be so nasty)
-  e=abs(rnorm(nn,4,3))
-  ## Because the variables are not scaled I need to give everything arbitrary weights
-  y=sqrt(4*x1+x1/x2*50+x5*2+3*e)
-  par(mar=c(8,2,8,2))
-  if(x==1){
-    bplot(x2,bab,bon)
-  }else{bplot(x2,p,bon2)}
-  par(mar=c(4.5,5,4,1))
-  spiel(x1,x2,x3,x4,x4c,x5,y,e,1/2)
-  spiel(x1,x2,x3,x4,x4c,x5,y,e,1)
-})
 mtext(c("A","B","C","D","E","F"),side = 1,line = rep(c(-60,-27),each=3),at = rep(c(-94,-68,-30),2),font=2,cex=cccex[3]-0.9)
 dev.off()
 
