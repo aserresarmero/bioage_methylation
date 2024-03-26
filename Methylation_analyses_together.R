@@ -524,8 +524,8 @@ trpl<-function(dis,age,female,breed,lsp,phyl){
 #################################
 
 ## Read in methylation
-wo=read.table("CAPTURE_DATASET",header=F)
-metadata=read.table("CAPTURE_DATASET_METADATA",header=T)
+wo=read.table(CAPTURE_DATASET,header=F)
+metadata=read.table(CAPTURE_DATASET_METADATA,header=T)
 metadata$sex=tolower(metadata$sex);metadata$spayed.neutered=tolower(metadata$spayed.neutered)
 metadata$wieght=as.numeric(gsub("[^0-9,\\.]","",metadata$wieght,perl = T))
 metadata$breed=tolower(metadata$breed)
@@ -542,7 +542,7 @@ wo=as.data.frame(wo)
 nam=wo[,1:2]
 
 ## Read in SNPs
-pelsnp=read.csv("SNPS_CAPTURE",header = T)
+pelsnp=read.csv(SNPS_CAPTURE,header = T)
 pelsnp=pelsnp[,apply(pelsnp,2,function(x)sum(x=="NaN"))/dim(pelsnp)[1]*100<26]
 pelsnp=pelsnp[,match(colnames(wo),paste(gsub(".bam.txt","",pelsnp[1,]),".CGmap",sep = ""),nomatch = 0)]
 wo=wo[,match(paste(gsub(".bam.txt","",pelsnp[1,]),".CGmap",sep = ""),colnames(wo),nomatch = 0)]
@@ -635,33 +635,33 @@ appel=t(gwas(met = as.data.frame(wo[,-1:-2]),cova = psn,data = as.data.frame(cor
 ## Horvath ##
 #############
 ## Read in methylation data
-gs=readRDS("METHYLATION_ARRAY_GOOD_PROBES")
+gs=readRDS(METHYLATION_ARRAY_GOOD_PROBES)
 gs=gs[!(is.na(gs$probeStart) | is.na(gs$probeEnd)),]
-load("METHYLATION_ARRAY_DATA")
-colo=read.csv("DOG_BREED_EQUIVALENCES")
+load(METHYLATION_ARRAY_DATA)
+colo=read.csv(DOG_BREED_EQUIVALENCES)
 colo$DogBreed[colo$DogBreed=="Cocker Spaniel"]="Cocker Spaniel (American)"
 colo$DogBreed[colo$DogBreed=="Mastiff"]="Mastiff (English)"
-colo2=read.csv("DOG_BREED_EQUIVALENCES2")
+colo2=read.csv(DOG_BREED_EQUIVALENCES2)
 x=normalized_betas_sesame
 x=x[unlist(x[,1])%in%gs[,1],]
-l=read.csv("METHYLATION_ARRAY_METADATA", header=T)
+l=read.csv(METHYLATION_ARRAY_METADATA, header=T)
 l$DogBreed[l$DogBreed=="Cocker Spaniel"]="Cocker Spaniel (American)"
 l$DogBreed[l$DogBreed=="Mastiff"]="Mastiff (English)"
 l$DogBreed[l$DogBreed=="Manchester Terrier"]="Manchester Terrier (Standard)"
 l$DogBreed=colo2$DogBreed[match(l$DogBreed,colo2$DogBreed.old)]
 l$lifespan_category=cut(l$LifespanMedianHorvath,c(0,10,12,20))
-pro=scan("PROBE_ORDER",what="char")
+pro=scan(PROBE_ORDER,what="char")
 x=x[match(pro,unlist(x[,1]),nomatch = 0),]
 x=x[,c("yes",l$CanBeUsedForAgingStudies)=="yes"]
 l=l[l$CanBeUsedForAgingStudies=="yes",]
 ### Read in breed tree from parker et al. 2017
-tre=read.nexus("TREE_PARKER_2017")
+tre=read.nexus(TREE_PARKER_2017)
 tre=cophenetic(tre)
 labs=sapply(strsplit(colnames(tre),"_"),function(x)x[1])
 ##Create median distance matrix from breeds
 ju=by(tre,labs,function(x)by(t(x),labs,function(y)median(unlist(y))))
 ju=sapply(names(ju),function(x)ju[[x]])
-bn=read.table("RRBS_BREEDS")
+bn=read.table(RRBS_BREEDS)
 bn[bn[,2]=="WEIM",2]="WHPG"
 bn[bn[,2]=="ESET",2]="ISET"
 bn[bn[,2]=="JACK",2]="GLEN"
@@ -735,20 +735,20 @@ aphor[is.na(aphor)]=1
 ## RRBS ##
 ##########
 ## Read in SNP data 
-d=read.table("RRBS_SNPS",header=T,comment.char=" ")
+d=read.table(RRBS_SNPS,header=T,comment.char=" ")
 d=d[d[,1]!="chrX",]
-b=read.table("RRBS_AGES")
-wei=read.table("RRBS_WEIGHTS")
+b=read.table(RRBS_AGES)
+wei=read.table(RRBS_WEIGHTS)
 b=cbind(b,rep(NA,length(b[,1])),rep(NA,length(b[,1])),wei[,2]);colnames(b)=paste0("V",1:length(b[1,]))
 #Read in methyaltion data
-a=read.table("RRBS_METHYLATION_MATRIX",header=T,comment.char=" ")
+a=read.table(RRBS_METHYLATION_MATRIX,header=T,comment.char=" ")
 a=a[,!colnames(a)%in%c("DINGO_1","DINGO_2","X5M")]
 a=a[,c(T,!grepl("^X",colnames(a)[-1]))]
 a1=a[,1:3];a=a[,-c(1:3)]
 d1=d[,1:2];d=d[,-c(1:2)]
 d=d[,match(colnames(a),colnames(d),nomatch=0)]
 b=b[match(colnames(d),b[,1]),]
-aff=read.table("RRBS_SNPS",header=T, comment.char=" ")
+aff=read.table(RRBS_SNPS,header=T, comment.char=" ")
 aff[aff=="1/1"]=2;aff[aff=="0/1"]=1;aff[aff=="0/0"]=0;aff[aff=="./."]=NA;aff1=aff[,1:2]
 aff=aff[,match(colnames(d),colnames(aff))]
 aff=apply(aff,2,as.numeric)
@@ -876,7 +876,7 @@ text(x=20,y=8,paste0("rho = ",round(cor(c(l$Weight.kg.avg,b[,8]),c(l$LifespanMed
 
 ## Tree of breeds 
 par(bg="transparent")
-bre=read.csv("PARKER_2017_TREE", header = T)
+bre=read.csv(PARKER_2017_TREE, header = T)
 nju=as.phylo(hclust(as.dist(ju)))
 nju=drop.tip(nju,nju$tip.label[!nju$tip.label%in%unique(l$DogTree)])
 par(xpd=NA)
@@ -935,7 +935,7 @@ plot(dd2,-log10(wprrb[m,4]),xlim=c(0,2327339098),col=c("black","grey")[unlist(ma
      cex=.6,pch=20,ylab=expression("-log"[10]~"pval"),xlab="Position (bps)",cex.lab=cccex[2]+0.2, cex.axis=cccex[2])
 loc2=dd2[order(wprrb[m,4])[1:20]]
 abline(v=dd2[order(wprrb[m,4])[1:10]],lty="dashed",col=adjustcolor("red",0.3),lwd=3)
-pro=read.table("ORDERED_PROBED_RRBS",header=T)
+pro=read.table(ORDERED_PROBED_RRBS,header=T)
 pro=pro[!is.na(pro[,3]),]
 m=mixedorder(paste(pro[,2],pro[,3],sep=":"))
 m[!grepl("^chr[0-9,X]+",pro[m,2])]=0
@@ -1182,7 +1182,7 @@ dev.off()
 ##### Analysis of GO enrichment
 library(WebGestaltR)
 
-HA=read.csv("METHYLATION_ARRAY_MANIFESTO")
+HA=read.csv(METHYLATION_ARRAY_MANIFESTO)
 
 g1=HA[HA[,2]%in%unlist(x[row.names(x)%in%as.character(which(order(norm2(wphor[,1])*norm2(wphor[,4]))%in%(1:100))),1]),3]
 g1=HA[HA[,2]%in%unlist(x[row.names(x)%in%names(sort(wphor[head(order(wphor[,4]),1000),1]))[1:100],1]),3]
@@ -1200,7 +1200,7 @@ g3=c("ARNT2","ASIC2","C12H6orf132","C1QL3","CACNA2D3","CELF4","CHD7","CTNNA2","C
 WebGestaltR(enrichMethod="ORA", organism="hsapiens",enrichDatabase="geneontology_Biological_Process_noRedundant",
   interestGene = g1,referenceGene=unique(HA[,3]),interestGeneType="genesymbol",referenceGeneType="genesymbol")
 WebGestaltR(enrichMethod="ORA", organism="hsapiens",enrichDatabase="geneontology_Biological_Process_noRedundant",
-  interestGene = g2,referenceGene=unique(scan("GENE_SET_CAPTURE",what="c")),interestGeneType="genesymbol",referenceGeneType="genesymbol")
+  interestGene = g2,referenceGene=unique(scan(GENE_SET_CAPTURE,what="c")),interestGeneType="genesymbol",referenceGeneType="genesymbol")
 WebGestaltR(enrichMethod="ORA", organism="hsapiens",enrichDatabase="geneontology_Biological_Process_noRedundant",
   interestGene = g3,interestGeneType="genesymbol",referenceSet = "genome_protein-coding")
                                       
@@ -1331,12 +1331,12 @@ dev.off()
 # #######
 # ##Ages of protuguese water dogs not used
 # 
-# relate=read.csv("PWD_RELATIONS",header=F,sep = ":")
-# #relate=read.csv("PWD_RELATIONS2",header=F,sep = ":")
+# relate=read.csv(PWD_RELATIONS,header=F,sep = ":")
+# #relate=read.csv(PWD_RELATIONS2,header=F,sep = ":")
 # relate=relate[match(l$ExternalSampleID[match(colnames(x),l$Basename,nomatch = 0)],relate[,1],nomatch = 0),]
 # relate=relate[apply(relate[,-1:-3],1,function(x)sum(x=="")<1),]
 # 
-# AOD=read.csv("PWD_AGES_OF_DEATH")
+# AOD=read.csv(PWD_AGES_OF_DEATH)
 # AOD[,2]=as.numeric(gsub("#NUM!","NA",AOD[,2]))
 # AOD=AOD[match(relate[,1],AOD[,1]),]
 # l2=l[match(AOD[,1],l$ExternalSampleID),]
