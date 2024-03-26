@@ -15,8 +15,8 @@ row.names(dec)=tmp
 ### Prepare Methylation array data
 load("METHYLATION_ARRAY_MATRIX")
 l=.csv("METHYLATION_ARRAY_METADATA", header=T)
-extra=.table("EXTRA_CGs")
-oth=read.csv("EXTRA_CGs2")
+extra=.table("EXTRA_CGs2")
+oth=read.csv("EXTRA_CGs3")
 x=normalized_betas_sesame
 x=x[,!colnames(x)%in%l$Basename[l$CanBeUsedForAgingStudies=="no"]]
 
