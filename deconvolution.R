@@ -1,10 +1,10 @@
 library(DeconRNASeq)
 
 ### Read in and process methylation Athlas
-me=read.csv("METHYLATION_ATLAS")
+me=read.csv(METHYLATION_ATLAS)
 me=me[!duplicated(me[,1]),]
-dec=read.csv("COMMON_CGs",header = T)
-ad=read.csv("EXTRA_CGs",header=F);colnames(ad)=colnames(dec)
+dec=read.csv(COMMON_CGs,header = T)
+ad=read.csv(EXTRA_CGs,header=F);colnames(ad)=colnames(dec)
 dec=dec[dec[,1]%in%me[,1],]
 dec=rbind(dec,ad)
 dec[(is.na(dec))]=0
@@ -13,10 +13,10 @@ dec=as.data.frame(dec[,-1])
 row.names(dec)=tmp
 
 ### Prepare Methylation array data
-load("METHYLATION_ARRAY_MATRIX")
-l=.csv("METHYLATION_ARRAY_METADATA", header=T)
-extra=.table("EXTRA_CGs2")
-oth=read.csv("EXTRA_CGs3")
+load(METHYLATION_ARRAY_MATRIX)
+l=read.csv(METHYLATION_ARRAY_METADATA, header=T)
+extra=read.table(EXTRA_CGs2)
+oth=read.csv(EXTRA_CGs3)
 x=normalized_betas_sesame
 x=x[,!colnames(x)%in%l$Basename[l$CanBeUsedForAgingStudies=="no"]]
 
@@ -24,7 +24,7 @@ x=x[,!colnames(x)%in%l$Basename[l$CanBeUsedForAgingStudies=="no"]]
 dmat=x[match(rownames(dec),unlist(x[,1]),nomatch = 0),]
 
 ### Load Human methylation data
-full=read.table("METHYLATION_MATRIX_HUMAN",header=T,sep="\t")
+full=read.table(METHYLATION_MATRIX_HUMAN,header=T,sep="\t")
 ### Match Human methylation data with atlas panel
 full=full[match(me[,1],full[,1],nomatch=0),]
 me=me[match(full[,1],me[,1],nomatch=0),]
@@ -44,7 +44,7 @@ row.names(dmat)=tmp
 m=DeconRNASeq(dmat,as.data.frame(dec),use.scale = T)
 
 ###Read in sheep data
-sheep=read.table("METHYLATION_MATRIX_SHEEP",header=T)
+sheep=read.table(METHYLATION_MATRIX_SHEEP,header=T)
 ## Match sheep data to atlas
 dmatsh=sheep[match(rownames(dec),sheep[,1],nomatch = 0),]
 dmat2sh=sheep[match(extra[match(ad[,1],extra[,1],nomatch = 0),2],sheep[,1]),]
@@ -54,7 +54,7 @@ tmp=unlist(dmatsh[,1])
 dmatsh=as.data.frame(dmatsh[,-1])
 row.names(dmatsh)=tmp
 msh=DeconRNASeq(dmatsh,as.data.frame(dec),use.scale = T)
-shtab=read.table("METADATA_SHEEP",header=T)
+shtab=read.table(METADATA_SHEEP,header=T)
 prsh=prcomp(t(sheep[,-1]))
 m2=as.data.frame(matrix(runif(prod(dim(dmat))),ncol=756))
 colnames(m2)=colnames(dmat);row.names(m2)=row.names(dmat)
@@ -85,8 +85,8 @@ m3=as.data.frame(matrix(runif(prod(dim(full))),ncol=490))
 colnames(m3)=colnames(full);row.names(m3)=row.names(full)
 m3=DeconRNASeq(m3,me)
 
-nu=t(read.table("METHYLATION_MATRIX_LABS",header=T))
-ke=read.csv("REFERENCE_ATLAS_AGAIN")
+nu=t(read.table(METHYLATION_MATRIX_LABS,header=T))
+ke=read.csv(REFERENCE_ATLAS_AGAIN)
 ke=ke[!duplicated(ke[,1]),]
 
 tmp=nu[1,];nu=apply(nu[-1,],1,as.numeric)
